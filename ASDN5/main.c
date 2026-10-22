@@ -10,16 +10,18 @@ int main(void) {
     char arrayRow = matrixRow;
     double epsilon = 1e-4;
 
-    char numberSign = 2; //змінна для генерування знаку дійсного числа
-    unsigned range = 1000; //змінна для генерування цілої частини числа
-    unsigned precis = 4; //змінна для генерування знаків після коми
-    double multiplication = 1;
+    char numberSign = 2; //variable for generating number's sign (+/-)
+    unsigned range = 1000; //variable for generating integer part of the number
+    unsigned precis = 4; //variable for generating floating part of number
+    double multiplication = 1;//variable for calculation the multi of negative elements
+    double temp;//variable for sorting
     double desiredValueInArray;
 
-    srand(time(NULL));
 
     double matrix[matrixRow][matrixCol];
     double array [arrayRow];
+
+    srand(time(NULL));
 
     for (char i = 0; i < matrixRow; i++) {
         for (char j = 0; j < matrixCol; j++) {
@@ -47,11 +49,31 @@ int main(void) {
     printf("Input desired value in array --> ");
     scanf("%lf", &desiredValueInArray);
 
-    //знаходження заданого значення
+    //lineal search for inputted value
     for (char i = 0; i < arrayRow; i++) {
-        if (fabs((desiredValueInArray - array[i])/array[i]) < epsilon) {
-            printf("Your desired value (%.4lf) is on %d place", desiredValueInArray,i+1);
+        if (fabs((desiredValueInArray - array[i])/array[i]) < epsilon) { //relative epsilon comparison
+            printf("Your desired value (%.4lf) is on %d place\n", desiredValueInArray,i+1);
         }
+    }
+
+    for (int i = 0; i < matrixCol; i++) {
+        for (int j = 0; j < matrixRow; j++) {
+            for (int k = 1; k < matrixRow; k++) {
+                if (matrix[k-1][i] > matrix[k][i]) {
+                    temp = matrix[k-1][i];
+                    matrix[k-1][i] = matrix[k][i];
+                    matrix[k][i] = temp;
+                }
+            }
+        }
+    }
+
+
+    for (int i = 0; i < matrixRow; i++) {
+        for (int j = 0; j < matrixCol; j++) {
+            printf("%.4lf ", matrix[i][j]);
+        }
+        printf("\n");
     }
 return 0;
 }
