@@ -5,7 +5,6 @@
 
 // initialising the matrix with random elements
 void matrixInitialising(int matrixRow, int matrixCol, double matrix[matrixRow][matrixCol]) {
-    srand(time(NULL));
     char numberSign = 2; // variable for generating number's sign (+/-)
     unsigned range = 1000; // variable for generating integer part of the number
     unsigned precis = 4; // variable for generating floating part of number
@@ -57,22 +56,47 @@ void matrixColumnsBubbleSort(int matrixRow,  int matrixCol, double matrix[matrix
     }
 }
 
-// lineal search in array of multiplication of negative matrix's rows's elements
-void arrayLinearSearch(int arrayValue, double array[arrayValue],double desiredValueInArray,double epsilon) {
-    for (char i = 0; i < arrayValue; i++) {
+// linear search in array of multiplication of negative matrix's rows's elements
+int arrayLinearSearch(int arraySize, double array[arraySize],double desiredValueInArray,double epsilon) {
+    for (int i = 0; i < arraySize; i++) {
         if (fabs((desiredValueInArray - array[i])/array[i]) < epsilon) { // <-- relative epsilon comparison
-            printf("Your desired value (%.4lf) is on %d place\n", desiredValueInArray,i+1);
+            return i;
         }
+    }
+}
+
+// binary search in previously sorted matrix's columns
+int arrayBinarySearch(int arraySize, double array[], double desiredValueInArray, double epsilon) {
+    int left = 0;
+    int right = arraySize - 1;
+
+    while (left <= right) {
+        int middle = left + (left + right) / 2;
+
+        if ((array[middle] - desiredValueInArray) / desiredValueInArray < epsilon) {
+            return middle;
+        }
+        if (array[middle] < desiredValueInArray) {
+            left = middle + 1;
+        }
+        else {
+            right = middle - 1;
+        }
+
     }
 }
 
 int main(void) {
 
+    srand(time(NULL));
     char matrixRow = 8;
-    char matrixCol = 4;
     char arrayRow = matrixRow;
+    char matrixCol = 4;
+    char searchAlgorithmOption;
     double epsilon = 1e-4;
     double desiredValueInArray;
+    int foundIndex = 0;
+    int desiredColumn; // binary search
 
     double matrix[matrixRow][matrixCol];
     double array [arrayRow];
@@ -82,25 +106,59 @@ int main(void) {
     matrixOutput(matrixRow, matrixCol, matrix);
 
     printf("\n");
-    printf("Array of multiplications of elements in matrix rows -->\n");
-    arrayInitialising(matrixRow, matrixCol, array, matrix);
-    printf("\n");
-    for (char i = 0; i < arrayRow; i++) {
-        printf("%.4lf\n ", array[i]);
+
+    printf("Choose search algorithm (1 - linear | 2 - binary)\n");
+    scanf("%c", &searchAlgorithmOption);
+
+    switch (searchAlgorithmOption) {
+        case '1':
+            arrayInitialising(matrixRow, matrixCol, array, matrix);
+
+            printf("\n");
+            printf("Array of multiplications of elements in matrix rows -->\n");
+            printf("\n");
+
+            for (char i = 0; i < arrayRow; i++) {
+                printf("%.4lf\n ", array[i]);
+            }
+            printf("\n");
+
+            printf("Input desired value in array --> ");
+            scanf("%lf", &desiredValueInArray);
+            printf("\n");
+
+            foundIndex =  arrayLinearSearch(matrixRow, array, desiredValueInArray, epsilon) + 1;
+            printf("Your desired value (%.4lf) is on %d place\n", desiredValueInArray, foundIndex);
+
+            printf("\n");
+            break;
+
+        case '2':
+            matrixColumnsBubbleSort(matrixRow, matrixCol, matrix);
+
+            printf("Matrix with sorted elements in columns --> \n");
+            printf("\n");
+
+            matrixOutput(matrixRow, matrixCol, matrix);
+
+            printf("\n");
+            printf("In which column do you want to find the number -->\n");
+            scanf("%d", &desiredColumn);
+
+            for (char i = 0; i < arrayRow; i++) {
+                array[i] = matrix[i][desiredColumn-1];
+            }
+
+            printf("Input desired value in array --> ");
+            scanf("%lf", &desiredValueInArray);
+            printf("\n");
+            foundIndex = arrayBinarySearch(arrayRow, array, desiredValueInArray, epsilon);
+            printf("Your desired value (%.4lf) is on %d place\n", desiredValueInArray, foundIndex);
+
+            break;
+
+        default:
+            printf("Invalid option\n");
     }
-    printf("\n");
-
-    printf("Input desired value in array --> ");
-    scanf("%lf", &desiredValueInArray);
-
-    arrayLinearSearch(matrixRow, array, desiredValueInArray, epsilon);
-    printf("\n");
-    matrixColumnsBubbleSort(matrixRow, matrixCol, matrix);
-    printf("\n");
-
-
-    printf("Matrix with sorted elements in columns --> \n");
-    printf("\n ");
-    matrixOutput(matrixRow, matrixCol, matrix);
 return 0;
 }
