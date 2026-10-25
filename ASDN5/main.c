@@ -15,6 +15,7 @@ void matrixInitialising(int matrixRow, int matrixCol, double matrix[matrixRow][m
         }
     }
 }
+
 // initialising the array, every element in which, is a multiplication of negative elements in each matrix's rows(8)
 void arrayInitialising(int matrixRow, int matrixCol, double array[matrixRow], double matrix[matrixRow][matrixCol]) {
     double multiplication = 1;// variable for calculation the multi of negative elements
@@ -71,9 +72,9 @@ int arrayBinarySearch(int arraySize, double array[], double desiredValueInArray,
     int right = arraySize - 1;
 
     while (left <= right) {
-        int middle = left + (left + right) / 2;
+        int middle = left + (right - left) / 2;
 
-        if ((array[middle] - desiredValueInArray) / desiredValueInArray < epsilon) {
+        if (fabs((array[middle] - desiredValueInArray) / desiredValueInArray) < epsilon) { // <-- relative epsilon comparison
             return middle;
         }
         if (array[middle] < desiredValueInArray) {
@@ -82,7 +83,6 @@ int arrayBinarySearch(int arraySize, double array[], double desiredValueInArray,
         else {
             right = middle - 1;
         }
-
     }
 }
 
@@ -152,7 +152,8 @@ int main(void) {
             printf("Input desired value in array --> ");
             scanf("%lf", &desiredValueInArray);
             printf("\n");
-            foundIndex = arrayBinarySearch(arrayRow, array, desiredValueInArray, epsilon);
+
+            foundIndex = arrayBinarySearch(arrayRow, array, desiredValueInArray, epsilon) + 1;
             printf("Your desired value (%.4lf) is on %d place\n", desiredValueInArray, foundIndex);
 
             break;
